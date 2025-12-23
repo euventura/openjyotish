@@ -1,0 +1,17 @@
+.env
+.sqlite
+.vscode
+.idea
+.DS_Store
+bin/
+obj/
+vendor/
+*.log
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+/bin
