@@ -125,7 +125,6 @@ type Result struct {
 	RawOutput string
 }
 
-// Monta os argumentos do swetest conforme as opções
 func (opt *SwissOptions) Args() []string {
 	args := []string{}
 
@@ -256,7 +255,6 @@ func splitLines(s string) []string {
 	return lines
 }
 
-// Executa o swetest e retorna Result (com Bhavas e Grahas)
 func ExecSwiss(opt *SwissOptions) (Result, error) {
 	args := opt.Args()
 	cmd := exec.Command("../swetest", args...)
