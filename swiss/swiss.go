@@ -2,6 +2,7 @@ package swiss
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -298,7 +299,21 @@ func splitLines(s string) []string {
 
 func ExecSwiss(opt *SwissOptions) (Result, error) {
 	args := opt.Args()
-	cmd := exec.Command("./swetest", args...)
+	cwd, err := os.Getwd()
+	sPath := cwd + "/swetest"
+
+	_, err = os.Stat(sPath)
+
+	if err != nil {
+		sPath = cwd + "/../swetest"
+		_, err = os.Stat(sPath)
+
+		if err != nil {
+			return Result{}, fmt.Errorf("swetest executable not found at %s: %w", sPath, err)
+		}
+	}
+
+	cmd := exec.Command(sPath, args...)
 	output, err := cmd.CombinedOutput()
 	res := parseSwissOutputToResult(string(output))
 	if err != nil {
