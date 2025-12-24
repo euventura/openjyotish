@@ -1,0 +1,62 @@
+package jyotish
+
+import "fmt"
+
+type Nakshatra struct {
+	Name   string
+	Start  float64
+	End    float64
+	Pada   int
+	Isha   string
+	Number int
+}
+
+var nakshatras = []Nakshatra{
+	{Name: "Ashwini", Start: 0.00, End: 13.20, Isha: "Ketu", Number: 1},
+	{Name: "Bharani", Start: 13.20, End: 26.40, Isha: "Shukra", Number: 2},
+	{Name: "Krittika", Start: 26.40, End: 40.00, Isha: "Surya", Number: 3},
+	{Name: "Rohini", Start: 40.00, End: 53.20, Isha: "Chandra", Number: 4},
+	{Name: "Mrigashira", Start: 53.20, End: 66.40, Isha: "Mangala", Number: 5},
+	{Name: "Ardra", Start: 66.40, End: 80.00, Isha: "Rahu", Number: 6},
+	{Name: "Punarvasu", Start: 80.00, End: 93.20, Isha: "Guru", Number: 7},
+	{Name: "Pushya", Start: 93.20, End: 106.40, Isha: "Sani", Number: 8},
+	{Name: "Ashlesha", Start: 106.40, End: 120.00, Isha: "Budha", Number: 9},
+	{Name: "Magha", Start: 120.00, End: 133.20, Isha: "Ketu", Number: 10},
+	{Name: "Purva Phalguni", Start: 133.20, End: 146.40, Isha: "Shukra", Number: 11},
+	{Name: "Uttara Phalguni", Start: 146.40, End: 160.00, Isha: "Surya", Number: 12},
+	{Name: "Hasta", Start: 160.00, End: 173.20, Isha: "Chandra", Number: 13},
+	{Name: "Chitra", Start: 173.20, End: 186.40, Isha: "Mangala", Number: 14},
+	{Name: "Swati", Start: 186.40, End: 200.00, Isha: "Rahu", Number: 15},
+	{Name: "Vishakha", Start: 200.00, End: 213.20, Isha: "Guru", Number: 16},
+	{Name: "Anuradha", Start: 213.20, End: 226.40, Isha: "Sani", Number: 17},
+	{Name: "Jyestha", Start: 226.40, End: 240.00, Isha: "Budha", Number: 18},
+	{Name: "Moola", Start: 240.00, End: 253.20, Isha: "Ketu", Number: 19},
+	{Name: "Purva Ashada", Start: 253.20, End: 66.40, Isha: "Shukra", Number: 20},
+	{Name: "Uttara Ashadha", Start: 266.40, End: 280.00, Isha: "Surya", Number: 21},
+	{Name: "Shravana", Start: 280.00, End: 293.20, Isha: "Chandra", Number: 22},
+	{Name: "Dhanishta", Start: 293.20, End: 306.40, Isha: "Mangala", Number: 23},
+	{Name: "Shatabhisha", Start: 306.40, End: 320.00, Isha: "Rahu", Number: 24},
+	{Name: "Purva Bhadrapada", Start: 320.00, End: 333.20, Isha: "Guru", Number: 25},
+	{Name: "Uttara Bhadrapada", Start: 333.20, End: 346.40, Isha: "Sani", Number: 26},
+	{Name: "Revati", Start: 346.40, End: 360.00, Isha: "Budha", Number: 27},
+}
+
+func calcNakshatra(degree float64) (Nakshatra, error) {
+	for _, nakshatra := range nakshatras {
+		if degree >= nakshatra.Start && degree < nakshatra.End {
+			nakshatra.Pada = int((degree-nakshatra.Start)/3.2) + 1
+			return nakshatra, nil
+		}
+	}
+	return Nakshatra{}, fmt.Errorf("Invalid Degree")
+}
+
+func fillNakshatra(k *Kundli) {
+
+	nGrahas := []Graha{}
+	for _, g := range k.Grahas {
+		g.Nakshatra, _ = calcNakshatra(g.Lng)
+		nGrahas = append(nGrahas, g)
+	}
+	k.Grahas = nGrahas
+}

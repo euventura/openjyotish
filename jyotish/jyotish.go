@@ -15,6 +15,7 @@ type Graha struct {
 	Lng         float64
 	Dec         float64
 	Speed       float64
+	Nakshatra   Nakshatra
 }
 
 type Bhava struct {
@@ -33,29 +34,32 @@ type Rashi struct {
 	Grahas []Graha
 }
 
+type Kundli struct {
+	Grahas []Graha
+	Bhavas []Bhava
+	Dasha  map[string]Dasha
+}
+
 var grahas []Graha
 var bhavas []Bhava
 
 func loadFromSwiss(swiss *swiss.Result) {
 
+	k := Kundli{}
 	for i, sBhav := range swiss.Bhavas {
 
 		bRashi := 1
-
 		if i > 0 && swiss.Bhavas[0].Start > sBhav.Start {
 			bRashi = 13 - int(math.Floor(math.Mod((swiss.Bhavas[0].Start-sBhav.Start), 360)/30)+1)
 		}
-
 		if swiss.Bhavas[0].Start < sBhav.Start && i > 0 {
 			bRashi = int(math.Floor(math.Mod((sBhav.Start-swiss.Bhavas[0].Start), 360)/30)) + 1
-
 		}
-
 		bhavas = append(bhavas, Bhava{Number: sBhav.Number, Start: sBhav.Start, End: sBhav.End, Rashi: bRashi})
 	}
+	k.Bhavas = bhavas
 
 	for _, sGrah := range swiss.Grahas {
-
 		newGraha := Graha{
 			EName: sGrah.Name,
 			Lat:   sGrah.Latitude,
@@ -63,10 +67,15 @@ func loadFromSwiss(swiss *swiss.Result) {
 			Dec:   sGrah.Dec,
 			Speed: sGrah.Speed,
 		}
-
 		grahaBuild(&newGraha, bhavas[0])
 		grahas = append(grahas, newGraha)
-
+		k.Grahas = grahas
 	}
+	fill(&k)
+}
 
+func fill(k *Kundli) {
+
+	fillNakshatra(k)
+	// fillDasha(*k)
 }
