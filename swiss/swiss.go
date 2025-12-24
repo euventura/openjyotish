@@ -3,8 +3,37 @@ package swiss
 import (
 	"fmt"
 	"os/exec"
+	"strconv"
+	"strings"
 	"time"
 )
+
+var swissGrahas = []string{
+	"Sun",
+	"Moon",
+	"Mercury",
+	"Venus",
+	"Mars",
+	"Jupiter",
+	"Saturn",
+	"mean Node",
+	"true Node",
+}
+
+var swissBhavas = []string{
+	"house  1",
+	"house  2",
+	"house  3",
+	"house  4",
+	"house  5",
+	"house  6",
+	"house  7",
+	"house  8",
+	"house  9",
+	"house 10",
+	"house 11",
+	"house 12",
+}
 
 var AyanamsaOptions = map[string]string{
 	"0":  "Fagan/Bradley",
@@ -90,6 +119,7 @@ type SwissOptions struct {
 	Ayanamsa    string    // -ay: ex: ay0, ay1, etc
 	TrueNode    bool      // -true
 }
+
 type SwissResult struct {
 	RawOutput string
 	Planets   []Graha
@@ -97,10 +127,10 @@ type SwissResult struct {
 
 type Graha struct {
 	Name      string
-	Longitude string
-	Latitude  string
-	Distance  string
-	Speed     string
+	Longitude float64
+	Latitude  float64
+	Dec       float64
+	Speed     float64
 }
 
 type Bhava struct {
@@ -129,17 +159,19 @@ func (opt *SwissOptions) Args() []string {
 	args := []string{}
 
 	if opt.BhavaSystem == "" {
-		opt.BhavaSystem = "P"
+		opt.BhavaSystem = "A"
 	}
 
 	if opt.Ayanamsa != "" {
-		opt.Ayanamsa = "0"
+		opt.Ayanamsa = "1"
 	}
 
 	args = append(args, "-house"+fmt.Sprintf("%f,%f,%s", opt.Geopos.Lat, opt.Geopos.Lng, opt.BhavaSystem))
 	args = append(args, "-b"+opt.DateTime.UTC().Format("2.1.2006"))
 	args = append(args, "-ut"+opt.DateTime.UTC().Format("15:04:05"))
-	args = append(args, "-hsy"+opt.BhavaSystem)
+	args = append(args, "-sid"+opt.Ayanamsa)
+
+	args = append(args, "-hsyA")
 	// args = append(args, "-ay"+opt.Ayanamsa)
 
 	if opt.TrueNode {
@@ -159,14 +191,16 @@ func parseSwissOutputToResult(output string) Result {
 		// Parse planetas
 		grahaFound, err := parseGraha(line)
 
-		if err != nil {
+		if err == nil {
 			grahas = append(grahas, grahaFound)
+			continue
 		}
 
 		bhavaFound, err := parseBhava(line)
 
 		if err == nil {
 			bhavas = append(bhavas, bhavaFound)
+			continue
 		}
 	}
 	result.Grahas = grahas
@@ -176,62 +210,68 @@ func parseSwissOutputToResult(output string) Result {
 
 func parseGraha(line string) (Graha, error) {
 
-	var swissGrahas = []string{
-		"Sun",
-		"Moon",
-		"Mercury",
-		"Venus",
-		"Mars",
-		"Jupiter",
-		"Saturn",
-		"mean Node",
-		"true Node",
-	}
-
 	if len(line) > 0 {
-
+		fmt.Println(line)
 		for _, grahaName := range swissGrahas {
 
 			if line[0:len(grahaName)] == grahaName {
-				var graha Graha
 
-				_, err := fmt.Sscanf(line, "%s %s %s %s %s", &graha.Name, &graha.Longitude, &graha.Latitude, &graha.Distance, &graha.Speed)
+				line = strings.Replace(line, grahaName, "", 1)
+				line = strings.TrimLeft(line, " ")
+
+				fields := strings.Split(line, "\x20\x20\x20")
+
+				if len(fields) < 4 {
+
+					return Graha{}, fmt.Errorf("Invalid Line")
+				}
+
+				cSpe, err := strconv.ParseFloat(strings.Trim(fields[2], " "), 64)
 
 				if err != nil {
-					return Graha{}, err
+					return Graha{}, fmt.Errorf("Invalid Line")
+
 				}
-				return graha, nil
+
+				cLat, _ := parseDMS(strings.Trim(fields[0], " "))
+				cLng, _ := parseDMS(strings.Trim(fields[1], " "))
+				cDec, _ := parseDMS(strings.Trim(fields[3], " "))
+
+				return Graha{
+					Name:      grahaName,
+					Latitude:  cLat,
+					Longitude: cLng,
+					Dec:       cDec,
+					Speed:     cSpe,
+				}, nil
+
 			}
 		}
 	}
 	return Graha{}, fmt.Errorf("Not Found")
+
 }
 
 func parseBhava(line string) (Bhava, error) {
-	var swissBhavas = []string{
-		"house  1",
-		"house  2",
-		"house  3",
-		"house  4",
-		"house  5",
-		"house  6",
-		"house  7",
-		"house  8",
-		"house  9",
-		"house  10",
-		"house  11",
-		"house  12",
-	}
 
 	if len(line) > 0 {
-		for _, bhavaName := range swissBhavas {
+		for i, bhavaName := range swissBhavas {
 			if line[0:len(bhavaName)] == bhavaName {
-				var num int
 				var start, end float64
-				_, err := fmt.Sscanf(line, "%d %f %f", &num, &start, &end)
+				num := i + 1
+				parts := strings.SplitSeq(line, "  ")
+				for part := range parts {
 
-				if err != nil {
-					return Bhava{}, err
+					if len(part) < 10 {
+						continue
+					}
+
+					if start != 0 {
+						end, _ = parseDMS(part)
+						continue
+					}
+
+					start, _ = parseDMS(part)
 				}
 				return Bhava{Number: num, Start: start, End: end}, nil
 			}
@@ -264,4 +304,46 @@ func ExecSwiss(opt *SwissOptions) (Result, error) {
 		return res, fmt.Errorf("erro ao executar swetest: %w", err)
 	}
 	return res, nil
+}
+
+func parseDMS(dms string) (float64, error) {
+	dms = strings.TrimSpace(dms)
+	if dms == "" {
+		return 0, fmt.Errorf("empty DMS string")
+	}
+
+	sign := 1.0
+	if strings.HasPrefix(dms, "-") {
+		sign = -1.0
+		dms = dms[1:]
+	}
+
+	// Replacer for ° ' " and d characters.
+	replacer := strings.NewReplacer("°", " ", "'", " ", "\"", " ", "d", " ")
+	cleanedStr := replacer.Replace(dms)
+	parts := strings.Fields(cleanedStr)
+
+	var deg, min, sec float64
+	var err error
+
+	if len(parts) >= 1 {
+		deg, err = strconv.ParseFloat(parts[0], 64)
+		if err != nil {
+			return 0, fmt.Errorf("could not parse degrees from '%s': %w", parts[0], err)
+		}
+	}
+	if len(parts) >= 2 {
+		min, err = strconv.ParseFloat(parts[1], 64)
+		if err != nil {
+			return 0, fmt.Errorf("could not parse minutes from '%s': %w", parts[1], err)
+		}
+	}
+	if len(parts) >= 3 {
+		sec, err = strconv.ParseFloat(parts[2], 64)
+		if err != nil {
+			return 0, fmt.Errorf("could not parse seconds from '%s': %w", parts[2], err)
+		}
+	}
+
+	return sign * (deg + min/60.0 + sec/3600.0), nil
 }

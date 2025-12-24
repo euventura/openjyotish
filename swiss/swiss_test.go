@@ -8,13 +8,13 @@ import (
 
 func TestExecSwiss(t *testing.T) {
 	dateStr := "13/06/1988"
-	timeStr := "09:30"
+	timeStr := "12:30"
 	lat := -23.5505
 	lng := -46.6333
 
 	dateTime, err := time.Parse("02/01/2006 15:04", dateStr+" "+timeStr)
 	if err != nil {
-		t.Fatalf("Erro ao fazer parse da data e hora: %v", err)
+		t.Fatalf("Error %v", err)
 	}
 
 	options := &SwissOptions{
@@ -24,29 +24,20 @@ func TestExecSwiss(t *testing.T) {
 	}
 
 	result, err := ExecSwiss(options)
-	fmt.Println(result)
+
+	fmt.Println(result.Bhavas)
 
 	if err != nil {
-		t.Fatalf("ExecSwiss retornou um erro: %v. Output: %s", err, result.RawOutput)
+		t.Fatalf("ExecSwiss exec err: %v. Output: %s", err, result.RawOutput)
 	}
 
-	if len(result.Grahas) == 0 {
-		t.Error("Nenhum graha (planeta) foi encontrado no resultado.")
+	if len(result.Grahas) != 9 {
+		t.Error("Invalid Graha Number")
 	}
 
-	if len(result.Bhavas) == 0 {
-		t.Error("Nenhum bhava (casa) foi encontrado no resultado.")
+	if len(result.Bhavas) != 12 {
+		fmt.Println(len(result.Bhavas))
+		t.Error("Invalid Bhava Number")
 	}
 
-	foundSun := false
-	for _, graha := range result.Grahas {
-		if graha.Name == "Sun" {
-			foundSun = true
-			t.Logf("Sol encontrado em: %s", graha.Longitude)
-			break
-		}
-	}
-	if !foundSun {
-		t.Error("Sol não foi encontrado na lista de grahas.")
-	}
 }
