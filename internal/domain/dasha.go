@@ -1,4 +1,4 @@
-package jyotish
+package domain
 
 import "time"
 
@@ -17,6 +17,7 @@ type Dasha struct {
 }
 
 type DashaCalc struct {
-	Moon  Graha
-	Lagna Graha
+	Moon      Graha
+	Lagna     Graha
+	BirthDate time.Time
 }

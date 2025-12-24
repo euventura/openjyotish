@@ -117,7 +117,7 @@ type SwissOptions struct {
 	BhavaSystem string    // -hsy: ex: 0.00,51.50,p
 	Geopos      LatLng    // -geopos: ex: 0.00,51.50,0
 	Ayanamsa    string    // -ay: ex: ay0, ay1, etc
-	TrueNode    bool      // -true
+	TrueNode    bool      // - true
 }
 
 type SwissResult struct {
@@ -188,9 +188,8 @@ func parseSwissOutputToResult(output string) Result {
 	var grahas []Graha
 	var bhavas []Bhava
 	for _, line := range splitLines(output) {
-		// Parse planetas
-		grahaFound, err := parseGraha(line)
 
+		grahaFound, err := parseGraha(line)
 		if err == nil {
 			grahas = append(grahas, grahaFound)
 			continue
@@ -259,19 +258,21 @@ func parseBhava(line string) (Bhava, error) {
 			if line[0:len(bhavaName)] == bhavaName {
 				var start, end float64
 				num := i + 1
-				parts := strings.SplitSeq(line, "  ")
-				for part := range parts {
-
-					if len(part) < 10 {
+				rest := strings.TrimSpace(strings.TrimPrefix(line, bhavaName))
+				fields := strings.Fields(rest)
+				for _, part := range fields {
+					v, err := parseDMS(part)
+					if err != nil {
 						continue
 					}
-
-					if start != 0 {
-						end, _ = parseDMS(part)
+					if start == 0 {
+						start = v
 						continue
 					}
-
-					start, _ = parseDMS(part)
+					if end == 0 {
+						end = v
+						break
+					}
 				}
 				return Bhava{Number: num, Start: start, End: end}, nil
 			}
@@ -297,11 +298,11 @@ func splitLines(s string) []string {
 
 func ExecSwiss(opt *SwissOptions) (Result, error) {
 	args := opt.Args()
-	cmd := exec.Command("../swetest", args...)
+	cmd := exec.Command("./swetest", args...)
 	output, err := cmd.CombinedOutput()
 	res := parseSwissOutputToResult(string(output))
 	if err != nil {
-		return res, fmt.Errorf("erro ao executar swetest: %w", err)
+		return res, fmt.Errorf("error executing swetest: %w", err)
 	}
 	return res, nil
 }
@@ -318,7 +319,6 @@ func parseDMS(dms string) (float64, error) {
 		dms = dms[1:]
 	}
 
-	// Replacer for ° ' " and d characters.
 	replacer := strings.NewReplacer("°", " ", "'", " ", "\"", " ", "d", " ")
 	cleanedStr := replacer.Replace(dms)
 	parts := strings.Fields(cleanedStr)
