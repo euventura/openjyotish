@@ -3,6 +3,7 @@ package application
 import (
 	"fmt"
 	"math"
+	"openjyotish/internal/application/nakshatra"
 	"openjyotish/internal/domain"
 	"strings"
 	"time"
@@ -32,10 +33,10 @@ func (ds *DashaService) CalculateDashas(k *domain.Kundli, birthDate time.Time) e
 		return err
 	}
 
-	if k.Dasha == nil {
-		k.Dasha = make(map[string]domain.Dasha)
+	if k.Dashas == nil {
+		k.Dashas = make(map[string]domain.Dasha)
 	}
-	k.Dasha[vimsottariDasha.Name] = vimsottariDasha
+	k.Dashas[vimsottariDasha.Name] = vimsottariDasha
 
 	return nil
 }
@@ -67,7 +68,7 @@ func findLordIndex(lord string) int {
 
 func Vimsottari(info domain.DashaCalc) (domain.Dasha, error) {
 	moonLng := info.Moon.Lng
-	nakshatraSvc := NakshatraService{}
+	nakshatraSvc := nakshatra.NakshatraService{}
 	nakshatra, err := nakshatraSvc.CalcNakshatra(moonLng)
 	if err != nil {
 		return domain.Dasha{}, fmt.Errorf("could not calculate nakshatra: %w", err)

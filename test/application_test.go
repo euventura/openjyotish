@@ -5,12 +5,14 @@ import (
 	"time"
 
 	"openjyotish/internal/application"
+	"openjyotish/internal/application/dasha"
+	"openjyotish/internal/application/nakshatra"
 	"openjyotish/internal/domain"
 	"openjyotish/swiss"
 )
 
 func TestNakshatraService_CalcNakshatra(t *testing.T) {
-	ns := application.NakshatraService{}
+	ns := nakshatra.NakshatraService{}
 	nakshatra, err := ns.CalcNakshatra(10.0)
 	if err != nil {
 		t.Fatalf("expected nil error, got %v", err)
@@ -24,7 +26,7 @@ func TestNakshatraService_CalcNakshatra(t *testing.T) {
 }
 
 func TestNakshatraService_CalcNakshatra_Invalid(t *testing.T) {
-	ns := application.NakshatraService{}
+	ns := nakshatra.NakshatraService{}
 	_, err := ns.CalcNakshatra(400.0)
 	if err == nil {
 		t.Fatalf("expected error for invalid degree")
@@ -32,7 +34,7 @@ func TestNakshatraService_CalcNakshatra_Invalid(t *testing.T) {
 }
 
 func TestDashaService_CalculateDashas(t *testing.T) {
-	ds := application.DashaService{}
+	ds := dasha.NewDashaService()
 	k := domain.Kundli{
 		Grahas: []domain.Graha{
 			{EName: "Moon", Lng: 10.0},
@@ -41,11 +43,11 @@ func TestDashaService_CalculateDashas(t *testing.T) {
 	}
 	birthDate := time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC)
 
-	if err := ds.CalculateDashas(&k, birthDate); err != nil {
+	if err := ds.CalculateAllDashas(&k, birthDate); err != nil {
 		t.Fatalf("expected nil error, got %v", err)
 	}
 
-	dasha, ok := k.Dasha["Vimsottari"]
+	dasha, ok := k.Dashas["Vimsottari"]
 	if !ok {
 		t.Fatalf("expected Vimsottari in dasha map")
 	}
@@ -55,7 +57,7 @@ func TestDashaService_CalculateDashas(t *testing.T) {
 }
 
 func TestKundliService_LoadFromSwiss(t *testing.T) {
-	ks := application.NewKundliService(&application.NakshatraService{}, &application.DashaService{})
+	ks := application.NewKundliService()
 	swissRes := &swiss.Result{
 		Bhavas: []swiss.Bhava{
 			{Number: 1, Start: 0.0, End: 30.0},
@@ -85,7 +87,7 @@ func TestKundliService_LoadFromSwiss(t *testing.T) {
 		t.Fatalf("expected nakshatra to be filled")
 	}
 
-	if _, ok := k.Dasha["Vimsottari"]; !ok {
+	if _, ok := k.Dashas["Vimsottari"]; !ok {
 		t.Fatalf("expected Vimsottari dasha computed")
 	}
 }

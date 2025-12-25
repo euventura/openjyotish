@@ -46,10 +46,10 @@ func Run() {
 		log.Fatalf("swiss calculation failed: %v", err)
 	}
 
-	ks := application.NewKundliService(&application.NakshatraService{}, &application.DashaService{})
+	ks := application.NewKundliService()
 	k := ks.LoadFromSwiss(res, dateTime)
 
-	if d, ok := k.Dasha["Vimsottari"]; ok {
+	if d, ok := k.Dashas["Vimsottari"]; ok {
 		fmt.Println("Vimsottari Dasha:")
 		for _, p := range d.Periods {
 			fmt.Printf("- %s: %s to %s\n", p.Graha.Name, p.Start.Format("2006-01-02"), p.End.Format("2006-01-02"))

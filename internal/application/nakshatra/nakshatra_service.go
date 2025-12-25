@@ -1,4 +1,4 @@
-package application
+package nakshatra
 
 import (
 	"fmt"
@@ -6,6 +6,10 @@ import (
 )
 
 type NakshatraService struct{}
+
+func NewNakshatraService() *NakshatraService {
+	return &NakshatraService{}
+}
 
 func (ns *NakshatraService) CalcNakshatra(degree float64) (domain.Nakshatra, error) {
 	for _, nakshatra := range domain.Nakshatras {

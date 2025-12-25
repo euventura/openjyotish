@@ -78,11 +78,11 @@ func RunGUI() {
 			return
 		}
 
-		ks := application.NewKundliService(&application.NakshatraService{}, &application.DashaService{})
+		ks := application.NewKundliService()
 		k := ks.LoadFromSwiss(res, dateTime)
 
 		output := "Vimsottari Dasha:\n\n"
-		if d, ok := k.Dasha["Vimsottari"]; ok {
+		if d, ok := k.Dashas["Vimsottari"]; ok {
 			for _, p := range d.Periods {
 				output += fmt.Sprintf("- %s: %s to %s\n",
 					p.Graha.Name,

@@ -2,17 +2,22 @@ package application
 
 import (
 	"math"
+
+	"openjyotish/internal/application/dasha"
+	"openjyotish/internal/application/nakshatra"
 	"openjyotish/internal/domain"
 	"openjyotish/swiss"
 	"time"
 )
 
 type KundliService struct {
-	nakshatraSvc *NakshatraService
-	dashaSvc     *DashaService
+	nakshatraSvc *nakshatra.NakshatraService
+	dashaSvc     *dasha.DashaService
 }
 
-func NewKundliService(ns *NakshatraService, ds *DashaService) *KundliService {
+func NewKundliService() *KundliService {
+	ns := nakshatra.NewNakshatraService()
+	ds := dasha.NewDashaService()
 	return &KundliService{nakshatraSvc: ns, dashaSvc: ds}
 }
 
@@ -53,7 +58,7 @@ func (ks *KundliService) processKundli(k *domain.Kundli, dateTime time.Time) {
 		ks.nakshatraSvc.FillNakshatra(k)
 	}
 	if ks.dashaSvc != nil {
-		_ = ks.dashaSvc.CalculateDashas(k, dateTime)
+		_ = ks.dashaSvc.CalculateAllDashas(k, dateTime)
 	}
 }
 
