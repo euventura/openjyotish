@@ -12,6 +12,7 @@ import (
 )
 
 func Run() {
+	gui := flag.Bool("gui", false, "Run GUI mode")
 	dateStr := flag.String("date", "13/06/1988", "Date in DD/MM/YYYY format")
 	timeStr := flag.String("time", "09:30", "Time in HH:MM format")
 	lat := flag.Float64("lat", -23.5505, "Decimal latitude")
@@ -20,6 +21,11 @@ func Run() {
 	bhava := flag.String("bhava", "P", "Bhava system code")
 	trueNode := flag.Bool("trueNode", false, "Use true node")
 	flag.Parse()
+
+	if *gui {
+		RunGUI()
+		return
+	}
 
 	dateTime, err := time.Parse("02/01/2006 15:04", *dateStr+" "+*timeStr)
 	if err != nil {

@@ -11,7 +11,7 @@ import (
 
 func TestNakshatraService_CalcNakshatra(t *testing.T) {
 	ns := application.NakshatraService{}
-	nakshatra, err := ns.CalcNakshatra(10.0, domain.Nakshatras)
+	nakshatra, err := ns.CalcNakshatra(10.0)
 	if err != nil {
 		t.Fatalf("expected nil error, got %v", err)
 	}
@@ -25,7 +25,7 @@ func TestNakshatraService_CalcNakshatra(t *testing.T) {
 
 func TestNakshatraService_CalcNakshatra_Invalid(t *testing.T) {
 	ns := application.NakshatraService{}
-	_, err := ns.CalcNakshatra(400.0, domain.Nakshatras)
+	_, err := ns.CalcNakshatra(400.0)
 	if err == nil {
 		t.Fatalf("expected error for invalid degree")
 	}

@@ -68,7 +68,7 @@ func findLordIndex(lord string) int {
 func Vimsottari(info domain.DashaCalc) (domain.Dasha, error) {
 	moonLng := info.Moon.Lng
 	nakshatraSvc := NakshatraService{}
-	nakshatra, err := nakshatraSvc.CalcNakshatra(moonLng, domain.Nakshatras)
+	nakshatra, err := nakshatraSvc.CalcNakshatra(moonLng)
 	if err != nil {
 		return domain.Dasha{}, fmt.Errorf("could not calculate nakshatra: %w", err)
 	}

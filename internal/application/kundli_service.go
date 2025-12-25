@@ -50,7 +50,7 @@ func (ks *KundliService) LoadFromSwiss(swissRes *swiss.Result, dateTime time.Tim
 
 func (ks *KundliService) processKundli(k *domain.Kundli, dateTime time.Time) {
 	if ks.nakshatraSvc != nil {
-		ks.nakshatraSvc.FillNakshatra(k, domain.Nakshatras)
+		ks.nakshatraSvc.FillNakshatra(k)
 	}
 	if ks.dashaSvc != nil {
 		_ = ks.dashaSvc.CalculateDashas(k, dateTime)
