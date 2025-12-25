@@ -4,4 +4,5 @@ type Kundli struct {
 	Grahas []Graha
 	Bhavas []Bhava
 	Dashas map[string]Dasha
+	Vargas []Varga
 }

@@ -32,7 +32,14 @@ func (ks *KundliService) LoadFromSwiss(swissRes *swiss.Result, dateTime time.Tim
 		if swissRes.Bhavas[0].Start < sBhav.Start && i > 0 {
 			bRashi = int(math.Floor(math.Mod((sBhav.Start-swissRes.Bhavas[0].Start), 360)/30)) + 1
 		}
-		bhavas = append(bhavas, domain.Bhava{Number: sBhav.Number, Start: sBhav.Start, End: sBhav.End, Rashi: bRashi, RawDegree: sBhav.Start})
+		bhavas = append(bhavas, domain.Bhava{
+			Number:    sBhav.Number,
+			Start:     sBhav.Start,
+			End:       sBhav.End,
+			Rashi:     bRashi,
+			RawDegree: sBhav.Start,
+			Degree:    math.Mod(sBhav.Start-(float64(sBhav.Number-1)*30), 360),
+		})
 	}
 	k.Bhavas = bhavas
 

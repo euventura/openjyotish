@@ -7,4 +7,5 @@ type Bhava struct {
 	Start     float64
 	End       float64
 	RawDegree float64
+	Degree    float64
 }

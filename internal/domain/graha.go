@@ -11,4 +11,5 @@ type Graha struct {
 	Dec         float64
 	Speed       float64
 	Nakshatra   Nakshatra
+	Degree      float64
 }

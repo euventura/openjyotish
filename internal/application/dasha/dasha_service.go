@@ -26,7 +26,7 @@ func (ds *DashaService) RegisterCalculator(calculator domain.DashaCalculator) {
 	ds.calculators[calculator.Name()] = calculator
 }
 
-func (ds *DashaService) CalculateDashas(k *domain.Kundli, birthDate time.Time, dashaName string) error {
+func (ds *DashaService) CalculateDasha(k *domain.Kundli, birthDate time.Time, dashaName string) error {
 
 	if k.Dashas == nil {
 		k.Dashas = make(map[string]domain.Dasha)
@@ -62,7 +62,7 @@ func (ds *DashaService) CalculateDashas(k *domain.Kundli, birthDate time.Time, d
 
 func (ds *DashaService) CalculateAllDashas(k *domain.Kundli, birthDate time.Time) error {
 	for dashaName := range ds.calculators {
-		if err := ds.CalculateDashas(k, birthDate, dashaName); err != nil {
+		if err := ds.CalculateDasha(k, birthDate, dashaName); err != nil {
 			return fmt.Errorf("failed to calculate %s: %w", dashaName, err)
 		}
 	}
