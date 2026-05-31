@@ -3,7 +3,7 @@ package test
 import (
 	"testing"
 
-	"openjyotish/internal/application/varga"
+	"openjyotish/internal/application/kundli/varga"
 	"openjyotish/internal/domain"
 )
 

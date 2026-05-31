@@ -6,9 +6,9 @@ import (
 	"log"
 	"time"
 
-	"openjyotish/internal/application"
+	application "openjyotish/internal/application/kundli"
 	"openjyotish/internal/infrastructure"
-	"openjyotish/swiss"
+	"openjyotish/internal/infrastructure/swiss"
 )
 
 func Run() {

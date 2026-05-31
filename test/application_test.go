@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"openjyotish/internal/application"
-	"openjyotish/internal/application/dasha"
-	"openjyotish/internal/application/nakshatra"
+	application "openjyotish/internal/application/kundli"
+	"openjyotish/internal/application/kundli/dasha"
+	"openjyotish/internal/application/kundli/nakshatra"
 	"openjyotish/internal/domain"
-	"openjyotish/swiss"
+	"openjyotish/internal/infrastructure/swiss"
 )
 
 func TestNakshatraService_CalcNakshatra(t *testing.T) {

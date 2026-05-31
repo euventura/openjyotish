@@ -9,9 +9,9 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 
-	"openjyotish/internal/application"
+	application "openjyotish/internal/application/kundli"
 	"openjyotish/internal/infrastructure"
-	"openjyotish/swiss"
+	"openjyotish/internal/infrastructure/swiss"
 )
 
 func RunGUI() {

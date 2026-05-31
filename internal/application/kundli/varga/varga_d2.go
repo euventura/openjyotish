@@ -1,7 +1,7 @@
 package varga
 
 import (
-	"openjyotish/internal/application"
+	"openjyotish/internal/application/kundli"
 	"openjyotish/internal/domain"
 )
 

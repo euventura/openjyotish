@@ -3,7 +3,7 @@ package dasha
 import (
 	"fmt"
 	"math"
-	"openjyotish/internal/application/nakshatra"
+	"openjyotish/internal/application/kundli/nakshatra"
 	"openjyotish/internal/domain"
 	"strings"
 	"time"

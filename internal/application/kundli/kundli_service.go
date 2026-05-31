@@ -3,10 +3,10 @@ package application
 import (
 	"math"
 
-	"openjyotish/internal/application/dasha"
-	"openjyotish/internal/application/nakshatra"
+	"openjyotish/internal/application/kundli/dasha"
+	"openjyotish/internal/application/kundli/nakshatra"
 	"openjyotish/internal/domain"
-	"openjyotish/swiss"
+	"openjyotish/internal/infrastructure/swiss"
 	"time"
 )
 

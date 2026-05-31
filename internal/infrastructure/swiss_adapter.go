@@ -1,6 +1,6 @@
 package infrastructure
 
-import "openjyotish/swiss"
+import "openjyotish/internal/infrastructure/swiss"
 
 type SwissAdapter struct{}
 

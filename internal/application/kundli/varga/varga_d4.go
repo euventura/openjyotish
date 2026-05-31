@@ -2,7 +2,7 @@ package varga
 
 import (
 	"math"
-	"openjyotish/internal/application"
+	"openjyotish/internal/application/kundli"
 	"openjyotish/internal/domain"
 )
 
